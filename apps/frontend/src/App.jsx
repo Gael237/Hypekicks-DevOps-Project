@@ -1,60 +1,51 @@
-import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Products from "./pages/Products";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Cart from "./pages/Cart";
+import Profile from "./pages/Profile";
+import CreateProduct from "./pages/CreateProduct";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
-
-export default function App() {
-  const [items, setItems] = useState([]);
-  const [text, setText] = useState("");
-  const [status, setStatus] = useState("");
-
-  async function load() {
-    const res = await fetch(`${API_BASE}/items`);
-    const data = await res.json();
-    setItems(data);
-  }
-
-  async function add() {
-    setStatus("saving...");
-    const res = await fetch(`${API_BASE}/items`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ text })
-    });
-    if (!res.ok) {
-      setStatus("error");
-      return;
-    }
-    setText("");
-    setStatus("ok");
-    await load();
-  }
-
-  useEffect(() => { load(); }, []);
-
+function App() {
   return (
-    <div style={{ fontFamily: "system-ui", padding: 24, maxWidth: 800 }}>
-      <h1>FinLab DevOps</h1>
-      <p>Objetivo: practicar contenedores, Kubernetes, Helm, CI/CD, pruebas e IaC.</p>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Products />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      <div style={{ display: "flex", gap: 8 }}>
-        <input
-          aria-label="new-item"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Nuevo item..."
-          style={{ flex: 1, padding: 8 }}
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          }
         />
-        <button onClick={add} disabled={!text.trim()}>Agregar</button>
-      </div>
 
-      <div style={{ marginTop: 8, color: "#444" }}>{status}</div>
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
-      <h2 style={{ marginTop: 24 }}>Items</h2>
-      <ul>
-        {items.map((it) => (
-          <li key={it.id}><strong>#{it.id}</strong> {it.text}</li>
-        ))}
-      </ul>
-    </div>
+        <Route
+          path="/create-product"
+          element={
+            <ProtectedRoute>
+              <CreateProduct />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
