@@ -53,4 +53,16 @@ export async function ensureSchema(pool) {
       created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
   `);
+
+  //A partir de aqui son cambios
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'buyer',
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+  `);
 }
