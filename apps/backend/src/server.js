@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { createPool, ensureSchema, isMemoryMode } from "./db.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+//import bcrypt from "bcrypt";
+//import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -102,7 +102,7 @@ app.post("/api/items", async (req, res) => {
 
 //Cambios a partir de aqui
 //--REGISTER--
-app.post("/api/auth/register", async (req, res) => {
+/*app.post("/api/auth/register", async (req, res) => {
   const { name, email, password, role } = req.body;
 
   if (!name || !email || !password) {
@@ -388,7 +388,7 @@ app.delete("/api/cart/:id", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "db_error" });
   }
-});
+});*/
 
 //-- ORDENES DE COMPRA --
 // Crear orden desde el carrito
