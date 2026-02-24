@@ -2,13 +2,39 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 //import bcrypt from "bcrypt";
-//import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { createPool } from "./db.js";
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Middleware para verificar token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "token_required" });
+
+  jwt.verify(
+    token,
+    process.env.JWT_SECRET || "secretkey",
+    (err, user) => {
+      if (err) return res.status(403).json({ error: "invalid_token" });
+
+      req.user = user; // aquí guardamos id y role
+      next();
+    }
+  );
+}
+
+function requireSeller(req, res, next) {
+  if (req.user.role !== "seller") {
+    return res.status(403).json({ error: "forbidden" });
+  }
+  next();
+}
 
 const port = process.env.PORT || 3002;
 const pool = createPool();
@@ -56,10 +82,14 @@ app.get("/api/products/:id", async (req, res) => {
 });
 
 // Crear producto (seller)
-app.post("/api/products", async (req, res) => {
-  const { name, description, price, stock, seller_id } = req.body;
+app.post("/api/products",
+  authenticateToken,
+  requireSeller,
+  async (req, res)=> {
+  const { name, description, price, stock } = req.body;
+  const seller_id = req.user.id;
 
-  if (!name || !price || !seller_id) {
+  if (!name || !price) {
     return res.status(400).json({ error: "missing_fields" });
   }
 
@@ -125,6 +155,14 @@ app.delete("/api/products/:id", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "db_error" });
   }
+});
+
+app.get("/healthz", (req, res) => {
+  res.status(200).send("ok");
+});
+
+app.get("/readyz", (req, res) => {
+  res.status(200).send("ready");
 });
 
 app.listen(port, () => {

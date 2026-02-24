@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-cart
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-cart
+
+spec:
+  replicas: {{ .Values.cart.replicas }}
+
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-cart
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-cart
+
+    spec:
+      containers:
+        - name: cart
+
+          image: {{ printf "%s/%s:%s" .Values.registry .Values.cart.image .Values.cart.tag | quote }}
+
+          ports:
+            - containerPort: {{ .Values.cart.port }}
+
+          env:
+            - name: PORT
+              value: {{ .Values.cart.port | quote }}
+
+            - name: PRODUCT_SERVICE_URL
+              value: "http://{{ .Release.Name }}-product:{{ .Values.product.port }}"
+
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: {{ .Values.cart.port }}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.cart.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10

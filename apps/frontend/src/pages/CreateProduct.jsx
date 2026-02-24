@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createProduct } from "../services/api";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 
@@ -11,6 +12,16 @@ function CreateProduct() {
 
   const navigate = useNavigate();
 
+  const role = localStorage.getItem("role");
+
+  if (!role) {
+    return <h2>Debes iniciar sesión</h2>;
+  }
+
+  if (role !== "seller") {
+    return <h2>No tienes permisos para publicar productos</h2>;
+  }
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -18,10 +29,19 @@ function CreateProduct() {
     });
   };
 
+  //cambios nuevos
+  const sellerId = localStorage.getItem("userId");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await createProduct(form);
+
+    await createProduct({
+    ...form,
+    seller_id: sellerId,
+    });
+
     alert("Producto publicado");
+    navigate("/");
   };
 
   return (

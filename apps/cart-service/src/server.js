@@ -24,18 +24,36 @@ app.get("/api/cart/:userId", async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT 
-        ci.id,
-        ci.quantity,
-        p.id AS product_id,
-        p.name,
-        p.price
-       FROM cart_items ci
-       JOIN products p ON ci.product_id = p.id
-       WHERE ci.user_id = $1`,
+         id,
+         product_id,
+         quantity
+       FROM cart_items
+       WHERE user_id = $1`,
       [userId]
     );
 
-    res.json(rows);
+    // 2️⃣ Por cada item llamar al product-service
+    const enrichedCart = await Promise.all(
+      rows.map(async (item) => {
+        const response = await fetch(
+          `http://localhost:3002/api/products/${item.product_id}`
+        );
+
+        console.log("Status:", response.status);
+
+        const product = await response.json();
+
+        console.log("Producto recibido:", product);
+
+        return {
+          ...item,
+          name: product.name,
+          price: product.price,
+        };
+      })
+    );
+
+    res.json(enrichedCart);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "db_error" });
@@ -113,6 +131,14 @@ app.delete("/api/cart/:id", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "db_error" });
   }
+});
+
+app.get("/healthz", (req, res) => {
+  res.status(200).send("ok");
+});
+
+app.get("/readyz", (req, res) => {
+  res.status(200).send("ready");
 });
 
 app.listen(port, () => {

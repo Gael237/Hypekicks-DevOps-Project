@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { register } from "../services/api";
+import { registerUser } from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 function Register() {
@@ -7,6 +7,7 @@ function Register() {
     name: "",
     email: "",
     password: "",
+    role: "buyer", // default
   });
 
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await register(form);
+      await registerUser(form);
       alert("Usuario registrado");
       navigate("/login");
     } catch (err) {
@@ -33,22 +34,20 @@ function Register() {
     <div>
       <h1>Registro</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Nombre"
-          onChange={handleChange}
-        />
-        <input
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
+        <input name="name" placeholder="Nombre" onChange={handleChange} />
+        <input name="email" placeholder="Email" onChange={handleChange} />
         <input
           name="password"
           type="password"
           placeholder="Contraseña"
           onChange={handleChange}
         />
+
+        <select name="role" onChange={handleChange} value={form.role}>
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
+        </select>
+        
         <button type="submit">Registrarse</button>
       </form>
     </div>

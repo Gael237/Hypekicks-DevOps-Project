@@ -82,6 +82,14 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
+app.get("/healthz", (req, res) => {
+  res.status(200).send("ok");
+});
+
+app.get("/readyz", (req, res) => {
+  res.status(200).send("ready");
+});
+
 app.listen(port, () => {
   console.log(`Auth service running on port ${port}`);
 });

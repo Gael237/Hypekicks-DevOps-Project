@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-auth
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-auth
+
+spec:
+  replicas: {{ .Values.auth.replicas }}
+
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-auth
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-auth
+
+    spec:
+      containers:
+        - name: auth
+
+          image: {{ printf "%s/%s:%s" .Values.registry .Values.auth.image .Values.auth.tag | quote }}
+
+          ports:
+            - containerPort: {{ .Values.auth.port }}
+
+          env:
+            - name: PORT
+              value: {{ .Values.auth.port | quote }}
+
+            - name: DATABASE_URL
+              value: {{ .Values.auth.env.DATABASE_URL | quote }}
+
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: {{ .Values.auth.port }}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.auth.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10

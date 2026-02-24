@@ -20,6 +20,20 @@ function Cart() {
     return <h2>Debes iniciar sesión</h2>;
   }
 
+  const updateQuantity = async (id, currentQuantity) => {
+  await fetch(`http://localhost:3003/api/cart/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      quantity: currentQuantity + 1,
+    }),
+  });
+
+  await loadCart(); 
+};
+
   return (
     <div>
       <h1>Carrito</h1>
@@ -28,9 +42,13 @@ function Cart() {
       ) : (
         items.map((item) => (
           <div key={item.id}>
-            <p>
-              Producto: {item.product_name} | Cantidad: {item.quantity}
-            </p>
+            <p><strong>{item.name}</strong></p>
+            <p>Precio: ${item.price}</p>
+            <p>Cantidad: {item.quantity}</p>
+            
+            <button onClick={() => updateQuantity(item.id, item.quantity)}>
+              +
+            </button>
           </div>
         ))
       )}

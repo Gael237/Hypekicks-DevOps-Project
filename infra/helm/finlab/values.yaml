@@ -3,27 +3,6 @@ namespace:
 
 registry: k3d-finlab-registry:5000
 
-backend:
-  image: finlab/backend
-  tag: "0.1.0"
-  replicas: 2
-  port: 3000
-  env:
-    PORT: "3000"
-    DB_MODE: "postgres"
-    DATABASE_URL: ""   # optional override (if set, DB_* vars are ignored)
-    DB_HOST: "postgres"
-    DB_PORT: "5432"
-    DB_USER: "finlab"
-    DB_PASSWORD: "finlab"
-    DB_NAME: "finlab"
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 256Mi
 
 frontend:
   image: finlab/frontend
@@ -46,6 +25,30 @@ postgres:
   db: finlab
   port: 5432
   storage: 1Gi
+
+auth:
+  image: finlab/auth
+  tag: "0.1.0"
+  replicas: 3
+  port: 3001
+  env:
+    DATABASE_URL: "postgres://authuser:123456@postgres:5432/auth_db"
+
+cart:
+  image: finlab/cart
+  tag: "0.1.0"
+  replicas: 2
+  port: 3002
+  env:
+    DATABASE_URL: "postgres://cartserver:789875@postgres:5432/cart_db"
+
+product:
+  image: finlab/product
+  tag: "0.1.0"
+  replicas: 2
+  port: 3003
+  env:
+    DATABASE_URL: "postgres://productuser:654321@postgres:5432/product_db"
 
 hpa:
   enabled: true

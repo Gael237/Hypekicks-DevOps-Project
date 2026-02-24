@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-product
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-product
+
+spec:
+  replicas: {{ .Values.product.replicas }}
+
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-product
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-product
+
+    spec:
+      containers:
+        - name: product
+
+          image: {{ printf "%s/%s:%s" .Values.registry .Values.product.image .Values.product.tag | quote }}
+
+          ports:
+            - containerPort: {{ .Values.product.port }}
+
+          env:
+            - name: PORT
+              value: {{ .Values.product.port | quote }}
+
+            - name: DATABASE_URL
+              value: {{ .Values.product.env.DATABASE_URL | quote }}
+
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: {{ .Values.product.port }}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.product.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
