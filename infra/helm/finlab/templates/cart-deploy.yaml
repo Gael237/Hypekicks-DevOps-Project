@@ -47,3 +47,11 @@ spec:
               port: {{ .Values.cart.port }}
             initialDelaySeconds: 10
             periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: {{ .Values.frontend.resources.requests.cpu }}
+              memory: {{ .Values.frontend.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.frontend.resources.requests.cpu }}
+              memory: {{ .Values.frontend.resources.requests.memory }}

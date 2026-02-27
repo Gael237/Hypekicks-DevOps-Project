@@ -31,6 +31,18 @@ auth:
   tag: "0.1.0"
   replicas: 3
   port: 3001
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    cpuUtilization: 70
   env:
     DATABASE_URL: "postgres://authuser:123456@postgres:5432/auth_db"
 
@@ -39,6 +51,18 @@ cart:
   tag: "0.1.0"
   replicas: 2
   port: 3002
+  resources:
+    requests:
+      cpu: 150m
+      memory: 128Mi
+    limits:
+      cpu: 400m
+      memory: 256Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    cpuUtilization: 70
   env:
     DATABASE_URL: "postgres://cartserver:789875@postgres:5432/cart_db"
 
@@ -47,11 +71,24 @@ product:
   tag: "0.1.0"
   replicas: 2
   port: 3003
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    cpuUtilization: 70
   env:
     DATABASE_URL: "postgres://productuser:654321@postgres:5432/product_db"
 
-hpa:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 6
-  cpuUtilization: 70
+
+#hpa:
+  #enabled: true
+  #minReplicas: 2
+  #maxReplicas: 6
+  #cpuUtilization: 70
