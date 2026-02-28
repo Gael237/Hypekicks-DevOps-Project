@@ -6,7 +6,7 @@ registry: k3d-finlab-registry:5000
 
 frontend:
   image: finlab/frontend
-  tag: "0.1.0"
+  tag: "1.1.0"
   replicas: 2
   port: 80
   resources:
@@ -28,7 +28,7 @@ postgres:
 
 auth:
   image: finlab/auth
-  tag: "0.1.0"
+  tag: "1.1.0"
   replicas: 3
   port: 3001
   resources:
@@ -48,7 +48,7 @@ auth:
 
 cart:
   image: finlab/cart
-  tag: "0.1.0"
+  tag: "1.1.0"
   replicas: 2
   port: 3002
   resources:
@@ -68,7 +68,7 @@ cart:
 
 product:
   image: finlab/product
-  tag: "0.1.0"
+  tag: "1.1.0"
   replicas: 2
   port: 3003
   resources:

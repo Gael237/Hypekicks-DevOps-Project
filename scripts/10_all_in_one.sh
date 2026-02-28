@@ -4,6 +4,8 @@ set -euo pipefail
 fail() { echo "ERROR: $*" >&2; exit 1; }
 ok()   { echo "OK: $*"; }
 
+CLUSTER="${CLUSTER:-finlab}"
+K3D_REG_NAME="${K3D_REG_NAME:-finlab-registry}"
 CLUSTER="finlab"
 RELEASE="finlab"
 NAMESPACE="finlab"
@@ -20,6 +22,12 @@ echo
 
 docker ps >/dev/null 2>&1 || fail "Docker no accesible sin sudo."
 ok "Docker funcionando"
+
+# 1) Reset cluster y registro asociado
+echo
+echo "== Reset cluster =="
+k3d cluster delete "${CLUSTER}" >/dev/null 2>&1 || true
+k3d registry delete "${K3D_REG_NAME}" >/dev/null 2>&1 || true
 
 # =========================================================
 # 1) Terraform Infrastructure + Deploy

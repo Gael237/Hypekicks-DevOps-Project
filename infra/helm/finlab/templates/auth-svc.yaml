@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
-    app: auth
+    app: {{ .Release.Name }}-auth
   ports:
     - port: 3001
       targetPort: {{ .Values.auth.port }}

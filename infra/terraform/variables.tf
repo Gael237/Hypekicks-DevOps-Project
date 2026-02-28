@@ -11,5 +11,5 @@ variable "release_name" {
 }
 
 variable "tag" {
-  default = "0.1.0"
+  default = "1.1.0"
 }
